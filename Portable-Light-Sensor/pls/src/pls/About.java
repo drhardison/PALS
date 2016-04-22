@@ -5,7 +5,17 @@
  */
 package pls;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,6 +27,9 @@ public class About extends javax.swing.JFrame {
      * Creates new form Template
      */
     public About() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
     }
 
@@ -44,7 +57,7 @@ public class About extends javax.swing.JFrame {
 
         jTextPane1.setEditable(false);
         jTextPane1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jTextPane1.setText("Sponsor:  Dr. John Kapenga\n\nDevelopers: \n\tLucas Everts\n\tJoseph Hagan\n\tAbdullah Al Zaher\n\nDevice Description:\nThis is a portable light sensor, for use in testing ambient lighting with regards to human health implications. If there are any questions or concerns one should read the documentation and\nthen contact a member of the design team if necessary.\n\nDeveloped in 2015 & 2016 @ Western Michigan University.\n\nGo Broncos!\n");
+        jTextPane1.setText("Sponsor:  Dr. John Kapenga\n\nDevelopers: Joseph Hagan & Lucas Everts\n\nDevice Description:\nThis is a portable light sensor, for use in testing ambient lighting with regards to human health implications. If there are any questions or concerns one should read the documentation and then contact a member of the design team if necessary.\n\nDeveloped in 2015 & 2016 @ Western Michigan University.\n\nGo Broncos!\n");
         jTextPane1.setToolTipText("");
         jTextPane1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -116,6 +129,42 @@ public class About extends javax.swing.JFrame {
         });
     }
 
+    public void loadAbout(){
+        /* Retrieved from http://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java */
+        InetAddress i = null;
+        Enumeration e = null;
+        try {
+            e = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException ex) {
+            Logger.getLogger(About.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        while(e.hasMoreElements())
+        {
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            String IFName  = n.getDisplayName();
+            while (ee.hasMoreElements())
+            {
+                if(IFName.equalsIgnoreCase("wlan0")){
+                    i = (InetAddress) ee.nextElement();
+                }
+                else{
+                    ee.nextElement();
+                }
+            }
+        }
+        String IPAddress = "IP Address: " + i.getHostAddress();
+        /* From http://stackoverflow.com/questions/5175728/how-to-get-the-current-date-time-in-java */
+        String timeStamp = new SimpleDateFormat("MM/dd/yyyy @ HH:mm:ss").format(Calendar.getInstance().getTime());
+        String DateTime = "Date/Time: " + timeStamp;
+        String currentText = jTextPane1.getText();
+        String newText = (currentText + "\n" + DateTime + "\n" + IPAddress 
+                 + "\n");
+        jTextPane1.setText(newText);
+        this.setVisible(true);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;

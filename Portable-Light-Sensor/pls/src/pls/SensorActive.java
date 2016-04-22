@@ -5,7 +5,10 @@
  */
 package pls;
 
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
@@ -39,19 +42,29 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     PrintWriter UVFile;
     PrintWriter BlueFile;
     String reportFile;
+    Process recProcess;
     
     /**
      * Creates new form Template
      */
-    public SensorActive() throws FileNotFoundException, UnsupportedEncodingException {
-        initComponents();
-        ClearDir();
-        RGBFile = new PrintWriter("/home/pi/CurrentTest/RGB.txt", "UTF-8");
-        RGBFile.println("RED\tGREEN\tBLUE\tCLEAR\tTEMP\tLUX");
-        UVFile = new PrintWriter("/home/pi/CurrentTest/UV+IR.txt", "UTF-8");
-        UVFile.println("VIS\tIR\tUV\tUV INDEX");
-        BlueFile = new PrintWriter("/home/pi/CurrentTest/Blue.txt", "UTF-8");
-        GetRunNumber();
+    public SensorActive(){
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
+        try {
+            initComponents();
+            ClearDir();
+            RGBFile = new PrintWriter("/home/pi/CurrentTest/RGB.txt", "UTF-8");
+            RGBFile.println("RED\tGREEN\tBLUE\tCLEAR\tTEMP\tLUX");
+            UVFile = new PrintWriter("/home/pi/CurrentTest/UV+IR.txt", "UTF-8");
+            UVFile.println("VIS\tIR\tUV\tUV INDEX");
+            BlueFile = new PrintWriter("/home/pi/CurrentTest/Blue.txt", "UTF-8");
+            GetRunNumber();
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showConfirmDialog(this, ex);
+        } catch (UnsupportedEncodingException ex) {
+            JOptionPane.showConfirmDialog(this, ex);
+        }
     }
 
     /**
@@ -68,6 +81,7 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
         jTextArea1 = new javax.swing.JTextArea();
         jProgressBar1 = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(this.MAXIMIZED_BOTH);
@@ -102,6 +116,14 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Sensor Active");
 
+        jButton2.setText("Record Button");
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -110,6 +132,7 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
             .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,8 +142,10 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -138,6 +163,12 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
             
         }
     }//GEN-LAST:event_jTextArea1KeyTyped
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       recProcess.destroyForcibly();
+       jButton2.setBackground(Color.green);
+       jButton2.setText("Stopped Recording");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -208,22 +239,26 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
-    
-    private void UpdateIterNo(){
-        NumberOfIterations = 33;
-    }
-    
+
     private void ClearDir(){
-        String [] cleanCurCmd = {"/bin/bash", "-c", "rm -rf /home/pi/CurrentTest/*"};
+        String [] cleanCurCmd = {"/bin/bash", "-c", "rm -rf /home/pi/CurrentTest/*.*v"};
          try {
              Runtime.getRuntime().exec(cleanCurCmd);
          } catch (IOException ex) {
+             JOptionPane.showConfirmDialog(this, ex);
+         }
+         cleanCurCmd[2] = "rm -rf /home/pi/CurrentTest/*.rep";
+         try {
+             Runtime.getRuntime().exec(cleanCurCmd);
+         } catch (IOException ex) {
+             JOptionPane.showConfirmDialog(this, ex);
          }
     }
     
@@ -243,7 +278,9 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
         
         try {
             //Borrowed code from http://stackoverflow.com/questions/13991007/execute-external-program-in-java
-            Process process = new ProcessBuilder(list).start();
+            recProcess = new ProcessBuilder(list).start();
+            jButton2.setText("Recording. Click Here to Stop");
+            jButton2.setBackground(Color.red);
             
         } catch (Exception ex) {
             Logger.getLogger(SensorActive.class.getName()).log(Level.SEVERE, null, ex);
@@ -253,7 +290,8 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     private void toggleRGBSensors(String sensor) {
         String programPath = "";
         List<String> list = new ArrayList<String>();
-        list.add("python");
+        list.add("sudo");
+        list.add("/usr/bin/python");
         switch(sensor){
             case "blue": programPath = "/home/pi/Python/Blue/switchToBlue.py";
                          break;
@@ -368,6 +406,7 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     }
     
     private void GenerateReport(){
+        
         List<String> list = new ArrayList<String>();
         list.add("python");
         list.add("/home/pi/Python/Report/makeReport.py");
@@ -401,6 +440,9 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     
 
     public ConfirmRecord() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
 
     }
@@ -550,6 +592,8 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
         @Override
         public Void doInBackground() throws InterruptedException {
             if(record){
+                SensorActive.this.getRootPane().setDefaultButton(jButton2);
+                jButton2.requestFocus();
                 jLabel1.setText("Recording/Testing in: 3");
                 Thread.sleep(1000);
                 jLabel1.setText("Recording/Testing in: 2");
@@ -560,13 +604,14 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
                 jTextArea1.append("I Am Recording You. You Have 30 seconds.\n");
                 Record();
             }
-            
-            
+            else{
+                jButton2.setVisible(false);
+            }
+            //JOptionPane.showConfirmDialog(rootPane, NumberOfIterations);
             int currentProgress = 0;
             //Initialize progress property.
-            setProgress(currentProgress);
-            UpdateIterNo();
-            ProgressEndPoint = 3*NumberOfIterations + 1;
+            setProgress(0);
+            ProgressEndPoint = 3*NumberOfIterations + (NumberOfIterations/3);
             jTextArea1.append("Sensor Starting...\n");
             int i = 0;
             jLabel1.setText("Warming Up RGB Sensor...");
@@ -584,12 +629,15 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
                 return null;
             }
             // RGB Loop
+            
             for(i=0; i<NumberOfIterations; i++){
                GetRGB();
                currentProgress++;
-               setProgress(Math.min(currentProgress, ProgressEndPoint));
+                int prog = currentProgress * 100 / ProgressEndPoint;
+                setProgress(Math.min(prog, 100));
             }
             RGBFile.close();
+            
             if(this.isCancelled()){
                 return null;
             }
@@ -608,7 +656,8 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
             for(i=0; i<NumberOfIterations; i++){
                 GetBlue();
                 currentProgress++;
-                setProgress(Math.min(currentProgress, ProgressEndPoint));
+                int prog = currentProgress * 100 / ProgressEndPoint;
+                setProgress(Math.min(prog, 100));
             }
             if(this.isCancelled()){
                 return null;
@@ -629,7 +678,8 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
                 //GetUV();
                 GetUV();
                 currentProgress++;
-                setProgress(Math.min(currentProgress, ProgressEndPoint));
+                int prog = currentProgress * 100 / ProgressEndPoint;
+                setProgress(Math.min(prog, 100));
                 if(this.isCancelled()){
                     return null;
                 }
@@ -641,7 +691,7 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
             jLabel1.setText("Generating Report...");
             jTextArea1.append("Generating Report...\n");
             GenerateReport();
-            setProgress(ProgressEndPoint);
+            setProgress(100);
             WhatNext next = new WhatNext();
             next.setVisible(true);
             return null;
@@ -670,6 +720,7 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     /**
      * Invoked when task's progress property changes.
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress" == evt.getPropertyName()) {
             int progress = (Integer) evt.getNewValue();
@@ -682,6 +733,9 @@ public class SensorActive extends javax.swing.JFrame implements PropertyChangeLi
     
 
     public WhatNext() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
 
     }

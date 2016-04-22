@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,6 +29,18 @@ public class MainMenu extends javax.swing.JFrame {
         this.setCursor(this.getToolkit().createCustomCursor(
             new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
             "null"));
+                String programPath = "";
+        List<String> list = new ArrayList<String>();
+        list.add("sudo");
+        list.add("/usr/bin/python");
+        list.add("/home/pi/Python/ButtToKeyD/butttokeyd.py");
+        try {
+            //Borrowed code from http://stackoverflow.com/questions/13991007/execute-external-program-in-java
+            Process process = new ProcessBuilder(list).start();
+            
+        } catch (Exception ex) {
+            Logger.getLogger(SensorActive.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -106,14 +119,7 @@ public class MainMenu extends javax.swing.JFrame {
             int index = jList1.getSelectedIndex();
             switch(index){
                 case 0: 
-                    SensorActive SAWindow = null;
-                    try {
-                        SAWindow = new SensorActive();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    SensorActive SAWindow = new SensorActive();
                     SAWindow.startSensor();
                     break;
                 case 1:
@@ -127,7 +133,7 @@ public class MainMenu extends javax.swing.JFrame {
                     break;
                 case 3:
                     About aboutpage = new About();
-                    aboutpage.setVisible(true);
+                    aboutpage.loadAbout();
                     break;
                 case 4:
                     ShutDownMenu shutty = new ShutDownMenu();

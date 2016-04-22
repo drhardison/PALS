@@ -72,7 +72,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="14" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Sponsor:  Dr. John Kapenga&#xa;&#xa;Developers: &#xa;&#x9;Lucas Everts&#xa;&#x9;Joseph Hagan&#xa;&#x9;Abdullah Al Zaher&#xa;&#xa;Device Description:&#xa;This is a portable light sensor, for use in testing ambient lighting with regards to human health implications. If there are any questions or concerns one should read the documentation and&#xa;then contact a member of the design team if necessary.&#xa;&#xa;Developed in 2015 &amp; 2016 @ Western Michigan University.&#xa;&#xa;Go Broncos!&#xa;"/>
+            <Property name="text" type="java.lang.String" value="Sponsor:  Dr. John Kapenga&#xa;&#xa;Developers: Joseph Hagan &amp; Lucas Everts&#xa;&#xa;Device Description:&#xa;This is a portable light sensor, for use in testing ambient lighting with regards to human health implications. If there are any questions or concerns one should read the documentation and then contact a member of the design team if necessary.&#xa;&#xa;Developed in 2015 &amp; 2016 @ Western Michigan University.&#xa;&#xa;Go Broncos!&#xa;"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
           <Events>

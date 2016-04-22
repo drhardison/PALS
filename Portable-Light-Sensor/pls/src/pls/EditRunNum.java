@@ -5,7 +5,9 @@
  */
 package pls;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,6 +27,9 @@ public class EditRunNum extends javax.swing.JFrame {
     PrintWriter ConfigFile;
 
     public EditRunNum() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
         try {
             ConfigFile = new PrintWriter("/home/pi/config.txt", "UTF-8");

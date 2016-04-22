@@ -5,11 +5,19 @@
  */
 package pls;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,12 +30,18 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
      * Creates new form Template
      */
     public Results() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
     }
     
     @Override
     public void keyTyped(KeyEvent evt) {
         if(evt.getKeyChar() == 'q'){
+            this.dispose();
+        }
+        else if(evt.getKeyChar() == '\n'){
             this.dispose();
         }
     }
@@ -308,10 +322,16 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
         if(evt.getKeyChar() == 'q'){
             this.dispose();
         }
+        else if(evt.getKeyChar() == '\n'){
+            this.dispose();
+        }
     }//GEN-LAST:event_jLabel1KeyTyped
 
     private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
         if(evt.getKeyChar() == 'q'){
+            this.dispose();
+        }
+        else if(evt.getKeyChar() == '\n'){
             this.dispose();
         }
     }//GEN-LAST:event_formKeyTyped
@@ -393,18 +413,31 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
 
         } catch (Exception ex) {
         }
+        int maximum = 1000;
+        for(int i=0; i<6; i++){
+            int temp = Integer.parseInt(data[i]);
+            while (temp > maximum){
+                maximum += 1000;
+            }
+        }
+        redBar.setMaximum(maximum);
         redBar.setValue(Integer.parseInt(data[0]));
-        redValue.setText(data[0] + "/" + redBar.getMaximum());
+        redValue.setText(data[0] + "/" + maximum);
+        greenBar.setMaximum(maximum);
         greenBar.setValue(Integer.parseInt(data[1]));
-        greenValue.setText(data[1] + "/" + greenBar.getMaximum());
+        greenValue.setText(data[1] + "/" + maximum);
+        blueBar.setMaximum(maximum);
         blueBar.setValue(Integer.parseInt(data[2]));
-        blueValue.setText(data[2] + "/" + blueBar.getMaximum());
+        blueValue.setText(data[2] + "/" + maximum);
+        blueBar2.setMaximum(maximum);
         blueBar2.setValue(Integer.parseInt(data[3]));
-        blueValue2.setText(data[3] + "/" + blueBar2.getMaximum());
+        blueValue2.setText(data[3] + "/" + maximum);
+        UVBar.setMaximum(maximum);
         UVBar.setValue(Integer.parseInt(data[4]));
-        UVValue.setText(data[4] + "/" + UVBar.getMaximum());
+        UVValue.setText(data[4] + "/" + maximum);
+        IRBar.setMaximum(maximum);
         IRBar.setValue(Integer.parseInt(data[5]));
-        IRValue.setText(data[5] + "/" + IRBar.getMaximum());
+        IRValue.setText(data[5] + "/" + maximum);
         flickerValue.setText(data[6]);
         tempValue.setText(data[7]);
         luxValue.setText(data[8]);
@@ -457,6 +490,9 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
     private String reportFile = "";
     private String cwd = "";
     public FileBrowser() {
+        this.setCursor(this.getToolkit().createCustomCursor(
+            new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+            "null"));
         initComponents();
 
     }
@@ -537,7 +573,16 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
             }
         }
         else if (evt.getKeyChar() == 'b'){
-            lsDir("../");
+            File file = new File(cwd + "../");
+            String s = "";
+            try {
+                s = file.getCanonicalPath();
+            } catch (IOException ex) {
+                Logger.getLogger(Results.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (!s.equals("/home")){
+                lsDir("../");
+            }
         }
         else if(evt.getKeyChar() == 'q'){
             Results.this.dispose();
@@ -584,8 +629,8 @@ public class Results extends javax.swing.JFrame implements java.awt.event.KeyLis
         // Used Code From:
         // http://stackoverflow.com/questions/8252440/adding-items-to-a-jlist-from-arraylist-using-defaultlistmodel
         // http://stackoverflow.com/questions/16770116/how-to-show-the-file-name-only-in-jlist
-        cwd += path;
-        
+        cwd += path;           
+
         String[] files = null;
         try{
             File[] fileList = (new File(cwd)).listFiles(new FileFilter() {
